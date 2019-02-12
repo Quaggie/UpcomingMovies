@@ -8,9 +8,14 @@
 
 import UIKit
 
-class UpcomingMoviesViewController: UIViewController {
+final class UpcomingMoviesViewController: UIViewController {
+    // MARK: - Properties -
     unowned let coordinator: UpcomingMoviesCoordinatorDelegate
+    private let screen = UpcomingMoviesViewControllerScreen()
+    private lazy var dataSource = UpcomingMoviesDataSource(tableView: screen.tableView, movies: movies)
+    private var movies: [Movie] = []
     
+    // MARK: - Init -
     init(coordinator: UpcomingMoviesCoordinatorDelegate) {
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -20,23 +25,35 @@ class UpcomingMoviesViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle -
+    override func loadView() {
+        self.view = screen
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
+        setupNavigationItem()
+        setupTableView()
     }
 }
 
-extension UpcomingMoviesViewController: CodeView {
-    func buildViewHierarchy() {
-        
-    }
-    
-    func setupConstraints() {
-        
-    }
-    
-    func setupAdditionalConfiguration() {
-        view.backgroundColor = .white
+// MARK: - Setup -
+extension UpcomingMoviesViewController {
+    private func setupNavigationItem() {
         navigationItem.title = "Upcoming Movies"
+    }
+    
+    private func setupTableView() {
+        screen.tableView.dataSource = dataSource
+        screen.tableView.delegate = self
+    }
+}
+
+// MARK: - UITableViewDelegate -
+extension UpcomingMoviesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movie = movies[indexPath.row]
+        coordinator.goToMovieDetail(movie: movie)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

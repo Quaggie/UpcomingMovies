@@ -9,7 +9,7 @@
 import UIKit
 
 protocol UpcomingMoviesCoordinatorDelegate: AnyObject {
-    
+    func goToMovieDetail(movie: Movie)
 }
 
 final class UpcomingMoviesCoordinator: Coordinator {
@@ -27,5 +27,8 @@ final class UpcomingMoviesCoordinator: Coordinator {
 }
 
 extension UpcomingMoviesCoordinator: UpcomingMoviesCoordinatorDelegate {
-    
+    func goToMovieDetail(movie: Movie) {
+        let viewController = MovieDetailViewController(movie: movie)
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }
