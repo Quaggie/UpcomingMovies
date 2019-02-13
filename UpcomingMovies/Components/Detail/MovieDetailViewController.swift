@@ -26,6 +26,14 @@ class MovieDetailViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationItem()
         view.backgroundColor = .white
+    }
+}
+
+// MARK: - Setup -
+private extension MovieDetailViewController {
+    func setupNavigationItem() {
+        navigationItem.title = movie.title
     }
 }

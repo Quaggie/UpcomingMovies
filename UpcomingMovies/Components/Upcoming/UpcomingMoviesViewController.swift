@@ -13,7 +13,7 @@ final class UpcomingMoviesViewController: UIViewController {
     unowned let coordinator: UpcomingMoviesCoordinatorDelegate
     private let screen = UpcomingMoviesViewControllerScreen()
     private lazy var dataSource = UpcomingMoviesDataSource(tableView: screen.tableView, movies: movies)
-    private var movies: [Movie] = []
+    private var movies: [Movie] = [Movie.mock, Movie.mock]
     
     // MARK: - Init -
     init(coordinator: UpcomingMoviesCoordinatorDelegate) {
@@ -38,14 +38,23 @@ final class UpcomingMoviesViewController: UIViewController {
 }
 
 // MARK: - Setup -
-extension UpcomingMoviesViewController {
-    private func setupNavigationItem() {
+private extension UpcomingMoviesViewController {
+    func setupNavigationItem() {
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.title = "Upcoming Movies"
     }
     
-    private func setupTableView() {
+    func setupTableView() {
         screen.tableView.dataSource = dataSource
         screen.tableView.delegate = self
+        screen.tableView.reloadData()
+    }
+}
+
+// MARK: - Api -
+private extension UpcomingMoviesViewController {
+    func getMovies() {
+        
     }
 }
 

@@ -12,14 +12,14 @@ import Kingfisher
 extension UIImageView {
     typealias ImageResult = ((UIImage?) -> Void)
     
-    func download(urlString: String, completion: @escaping ImageResult) {
+    func download(urlString: String) {
         let url = URL(string: urlString)
-        let processor = DownsamplingImageProcessor(size: frame.size) // >> RoundCornerImageProcessor(cornerRadius: 20)
-//        kf.indicatorType = IndicatorType.activity
+//        let processor = DownsamplingImageProcessor(size: frame.size) // >> RoundCornerImageProcessor(cornerRadius: 20)
+        setupIndicatorType(.activity)
         kf.setImage(with: url,
-                    placeholder: UIImage(named: "placeholderImage"),
+                    placeholder: UIImage(named: "movie_placeholder"),
                     options: [
-                        .processor(processor),
+//                        .processor(processor),
                         .scaleFactor(UIScreen.main.scale),
                         .transition(.fade(0.4)),
                         .cacheOriginalImage])
@@ -27,12 +27,17 @@ extension UIImageView {
             result in
             switch result {
             case .success(let value):
-                completion(value.image)
+                self.image = value.image
                 print("Task done for: \(value.source.url?.absoluteString ?? "")")
             case .failure(let error):
-                completion(nil)
+                self.image = UIImage(named: "movie_error")
                 print("Job failed: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func setupIndicatorType(_ type: IndicatorType) {
+        var kf = self.kf
+        kf.indicatorType = type
     }
 }

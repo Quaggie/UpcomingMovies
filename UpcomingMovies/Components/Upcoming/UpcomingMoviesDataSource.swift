@@ -22,6 +22,8 @@ final class UpcomingMoviesDataSource: NSObject {
     // MARK: - Setup -
     private func registerCells(tableView: UITableView) {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: UITableViewCell.identifier)
+        tableView.estimatedRowHeight = 100
+        tableView.rowHeight = 100
     }
 }
 
@@ -33,7 +35,13 @@ extension UpcomingMoviesDataSource: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: UITableViewCell.identifier, for: indexPath)
-        cell.textLabel?.text = movies[indexPath.row].originalTitle
+        let movie = movies[indexPath.row]
+        cell.textLabel?.text = movie.title
+        if let posterUrlString = movie.posterUrlString {
+            cell.imageView?.download(urlString: posterUrlString)
+        } else {
+            cell.imageView?.image = UIImage(named: "movie_error")
+        }
         return cell
     }
 }
