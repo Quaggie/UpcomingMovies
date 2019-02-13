@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MovieTableViewCell: UITableViewCell {
+final class MovieTableViewCell: UITableViewCell {
     
     private let imgView: UIImageView = {
         let iv = UIImageView()

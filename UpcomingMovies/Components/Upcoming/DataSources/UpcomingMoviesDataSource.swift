@@ -16,11 +16,11 @@ final class UpcomingMoviesDataSource: NSObject {
     init(tableView: UITableView, movies: [Movie]) {
         self.movies = movies
         super.init()
-        registerCells(tableView: tableView)
+        register(tableView: tableView)
     }
     
     // MARK: - Setup -
-    private func registerCells(tableView: UITableView) {
+    private func register(tableView: UITableView) {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: UITableViewCell.identifier)
         tableView.estimatedRowHeight = 100
         tableView.rowHeight = 100

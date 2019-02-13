@@ -8,6 +8,9 @@
 
 import UIKit
 
+typealias NSLayoutConstraintX = NSLayoutConstraint
+typealias NSLayoutConstraintY = NSLayoutConstraint
+
 extension UIView {
     func fillSuperview() {
         anchor(top: superview?.topAnchor,
@@ -64,5 +67,39 @@ extension UIView {
         NSLayoutConstraint.activate(anchors)
         
         return anchors
+    }
+    
+    @discardableResult
+    func anchorCenterXToSuperview(constant: CGFloat = 0) -> NSLayoutConstraint? {
+        translatesAutoresizingMaskIntoConstraints = false
+        
+        if let centerXAnchor = superview?.centerXAnchor {
+            let anchor = self.centerXAnchor.constraint(equalTo: centerXAnchor, constant: constant)
+            anchor.isActive = true
+            return anchor
+        }
+        
+        return nil
+    }
+    
+    @discardableResult
+    func anchorCenterYToSuperview(constant: CGFloat = 0) -> NSLayoutConstraint? {
+        translatesAutoresizingMaskIntoConstraints = false
+        
+        if let centerYAnchor = superview?.centerYAnchor {
+            let anchor = self.centerYAnchor.constraint(equalTo: centerYAnchor, constant: constant)
+            anchor.isActive = true
+            return anchor
+        }
+        
+        return nil
+    }
+    
+    @discardableResult
+    func anchorCenterSuperview() -> (NSLayoutConstraintX?, NSLayoutConstraintY?) {
+        let centerXAnchor = anchorCenterXToSuperview()
+        let centerYAnchor = anchorCenterYToSuperview()
+        
+        return (centerXAnchor, centerYAnchor)
     }
 }
