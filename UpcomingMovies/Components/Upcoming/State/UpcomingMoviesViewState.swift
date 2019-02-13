@@ -32,6 +32,8 @@ func ==<T>(lhs: UpcomingMoviesViewState<T>, rhs: UpcomingMoviesViewState<T>) -> 
         return true
     case (.error, .error):
         return true
+    case (.errorLoadingMore, .errorLoadingMore):
+        return true
     default:
         return false
     }

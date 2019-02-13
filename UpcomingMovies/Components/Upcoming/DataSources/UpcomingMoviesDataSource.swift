@@ -8,12 +8,20 @@
 
 import UIKit
 
+protocol UpcomingMoviesDataSourceInfiniteScrollDelegate: AnyObject {
+    func upcomingMoviesDataSourceInfiniteScrollDelegateOnExecute()
+}
+
 final class UpcomingMoviesDataSource: NSObject {
     // MARK: - Properties -
     private let movies: [Movie]
+    private unowned let infiniteScrollDelegate: UpcomingMoviesDataSourceInfiniteScrollDelegate
     
     // MARK: - Init -
-    init(tableView: UITableView, movies: [Movie]) {
+    init(tableView: UITableView,
+         infiniteScrollDelegate: UpcomingMoviesDataSourceInfiniteScrollDelegate,
+         movies: [Movie]) {
+        self.infiniteScrollDelegate = infiniteScrollDelegate
         self.movies = movies
         super.init()
         register(tableView: tableView)
@@ -22,6 +30,8 @@ final class UpcomingMoviesDataSource: NSObject {
     // MARK: - Setup -
     private func register(tableView: UITableView) {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: UITableViewCell.identifier)
+        tableView.register(MovieTableViewFooterView.self,
+                           forHeaderFooterViewReuseIdentifier: MovieTableViewFooterView.identifier)
         tableView.estimatedRowHeight = 100
         tableView.rowHeight = 100
     }
@@ -41,6 +51,11 @@ extension UpcomingMoviesDataSource: UITableViewDataSource {
             cell.imageView?.download(urlString: posterUrlString)
         } else {
             cell.imageView?.image = UIImage(named: "movie_error")
+        }
+        
+        let isAlmostOnBottom = indexPath.row == (movies.count - 2)
+        if isAlmostOnBottom {
+            infiniteScrollDelegate.upcomingMoviesDataSourceInfiniteScrollDelegateOnExecute()
         }
         return cell
     }

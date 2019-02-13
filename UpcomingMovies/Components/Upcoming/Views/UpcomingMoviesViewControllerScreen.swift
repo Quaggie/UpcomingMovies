@@ -50,6 +50,7 @@ final class UpcomingMoviesViewControllerScreen: UIView {
     }
     
     func changeUI(for state: UpcomingMoviesViewState<UpcomingMoviesResponse>) {
+        tableView.reloadData()
         switch state {
         case .loading:
             emptyView.isHidden = true

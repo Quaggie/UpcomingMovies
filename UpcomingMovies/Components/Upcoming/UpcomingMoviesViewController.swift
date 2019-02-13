@@ -9,38 +9,17 @@
 import UIKit
 
 final class UpcomingMoviesViewController: UIViewController {
+    
     // MARK: - Properties -
     unowned let coordinator: UpcomingMoviesCoordinatorDelegate
     private let movieApi: MovieService
     private let genreApi: GenreService
     private lazy var screen = UpcomingMoviesViewControllerScreen(errorViewDelegate: self)
-    private lazy var dataSource = UpcomingMoviesDataSource(tableView: screen.tableView, movies: movies)
+    private lazy var dataSource = UpcomingMoviesDataSource(tableView: screen.tableView,
+                                                           infiniteScrollDelegate: self,
+                                                           movies: movies)
     private var state: UpcomingMoviesViewState<UpcomingMoviesResponse> = .loading {
         didSet {
-            switch state {
-            case .loading:
-                break
-            case .loadingMore:
-                break
-            case .finished(let response):
-                if let totalPages = response.totalPages {
-                    self.total = totalPages
-                }
-                if let page = response.page {
-                    self.page = page
-                }
-                if let movies = response.results {
-                    self.movies = movies
-                }
-            case .filtering:
-                break
-            case .empty:
-                break
-            case .error:
-                break
-            case .errorLoadingMore:
-                break
-            }
             screen.changeUI(for: state)
         }
     }
@@ -49,18 +28,28 @@ final class UpcomingMoviesViewController: UIViewController {
     private var page: Int = 1
     private var movies: [Movie] = [] {
         didSet {
-            dataSource = UpcomingMoviesDataSource(tableView: screen.tableView, movies: movies)
+            dataSource = UpcomingMoviesDataSource(tableView: screen.tableView,
+                                                  infiniteScrollDelegate: self,
+                                                  movies: movies)
             screen.tableView.dataSource = dataSource
         }
     }
     private var filteredMovies: [Movie] = [] {
         didSet {
-            dataSource = UpcomingMoviesDataSource(tableView: screen.tableView, movies: filteredMovies)
+            dataSource = UpcomingMoviesDataSource(tableView: screen.tableView,
+                                                  infiniteScrollDelegate: self,
+                                                  movies: filteredMovies)
             screen.tableView.dataSource = dataSource
         }
     }
     private var isNotEmpty: Bool {
         return total > 0
+    }
+    private var canInfiniteScroll: Bool {
+        guard !movies.isEmpty, isNotEmpty, movies.count < total, !isFiltering(), case .finished = state else {
+            return false
+        }
+        return true
     }
     
     // MARK: - Init -
@@ -87,7 +76,8 @@ final class UpcomingMoviesViewController: UIViewController {
         setupNavigationItem()
         setupTableView()
         setupSearchController()
-        getMovies()
+        getGenres()
+        
     }
 }
 
@@ -127,48 +117,74 @@ private extension UpcomingMoviesViewController {
         }
         return movie
     }
+    
+    func getNextPage() {
+        let nextPage = page + 1
+        getMovies(page: nextPage)
+    }
+    
+    func tryAgain() {
+        getNextPage()
+    }
 }
 
 // MARK: - Api -
 private extension UpcomingMoviesViewController {
-    func getMovies() {
-        if isNotEmpty, state == .loading {
-            return
-        }
-        if isFiltering() {
-            return
-        }
-        state = .loading
+    func getGenres() {
         genreApi.getGenres { [weak self] (genresResult) in
             guard let self = self else { return }
             
             switch genresResult {
             case .success:
-                self.movieApi.getUpcomingMovies(page: 1) { [weak self] moviesResult in
-                    guard let self = self else { return }
-                    
-                    switch moviesResult {
-                    case .success(let response):
-                        if let results = response.results {
-                            self.movies = results
-                            if results.isEmpty {
-                                self.state = .empty("No movies found")
-                            } else {
-                                self.state = .finished(response)
-                            }
-                        } else {
-                            self.state = .empty("No movies found")
-                        }
-                    case .error(let err):
-                        if self.isNotEmpty {
-                            self.state = .errorLoadingMore
-                        } else {
-                            self.state = .error(err)
-                        }
-                    }
-                }
+                self.getMovies(page: self.page)
             case .error(let err):
                 self.state = .error(err)
+            }
+        }
+    }
+    
+    func getMovies(page: Int) {
+        if isNotEmpty {
+            if state == .loading || state == .loadingMore {
+                return
+            }
+        }
+        if isFiltering() {
+            return
+        }
+        if isNotEmpty {
+            state = .loadingMore
+        } else {
+            state = .loading
+        }
+        print("GETTING PAGE -> \(page)")
+        movieApi.getUpcomingMovies(page: page) { [weak self] moviesResult in
+            guard let self = self else { return }
+            
+            switch moviesResult {
+            case .success(let response):
+                if let results = response.results {
+                    self.movies.append(contentsOf: results)
+                    if results.isEmpty {
+                        self.state = .empty("No movies found")
+                    } else {
+                        if let totalResults = response.totalResults {
+                            self.total = totalResults
+                        }
+                        if let page = response.page {
+                            self.page = page
+                        }
+                        self.state = .finished(response)
+                    }
+                } else {
+                    self.state = .empty("No movies found")
+                }
+            case .error(let err):
+                if self.isNotEmpty {
+                    self.state = .errorLoadingMore
+                } else {
+                    self.state = .error(err)
+                }
             }
         }
     }
@@ -180,6 +196,25 @@ extension UpcomingMoviesViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let movie = getMovieFor(indexPath: indexPath)
         coordinator.goToMovieDetail(movie: movie)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: MovieTableViewFooterView.identifier) as! MovieTableViewFooterView
+        footer.state = .error
+        footer.delegate = self
+        return footer
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if total == 0 || isFiltering() {
+            return 0
+        }
+        
+        if state == .errorLoadingMore {
+            return MovieTableViewFooterView.height
+        }
+        
+        return 0
     }
 }
 
@@ -220,7 +255,7 @@ extension UpcomingMoviesViewController: UISearchResultsUpdating {
     }
 }
 
-// MARK: UISearchControllerDelegate
+// MARK: - UISearchControllerDelegate -
 extension UpcomingMoviesViewController: UISearchControllerDelegate {
     func willPresentSearchController(_ searchController: UISearchController) {
         filteredMovies = movies
@@ -233,8 +268,30 @@ extension UpcomingMoviesViewController: UISearchControllerDelegate {
     }
 }
 
+// MARK: - UpcomingMoviesErrorViewDelegate -
 extension UpcomingMoviesViewController: UpcomingMoviesErrorViewDelegate {
     func upcomingMoviesErrorViewDidTapButton() {
-        getMovies()
+        if Genre.genres.isEmpty {
+            getGenres()
+        } else {
+            getMovies(page: page)
+        }
+        
+    }
+}
+
+// MARK: - MovieTableViewFooterViewDelegate -
+extension UpcomingMoviesViewController: MovieTableViewFooterViewDelegate {
+    func movieTableViewFooterViewDidTapRetryButton() {
+        tryAgain()
+    }
+}
+
+// MARK: - UpcomingMoviesDataSourceInfiniteScrollDelegate -
+extension UpcomingMoviesViewController: UpcomingMoviesDataSourceInfiniteScrollDelegate {
+    func upcomingMoviesDataSourceInfiniteScrollDelegateOnExecute() {
+        if canInfiniteScroll {
+            getNextPage()
+        }
     }
 }

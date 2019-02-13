@@ -28,10 +28,8 @@ extension UIImageView {
             switch result {
             case .success(let value):
                 self.image = value.image
-                print("Task done for: \(value.source.url?.absoluteString ?? "")")
             case .failure(let error):
                 self.image = UIImage(named: "movie_error")
-                print("Job failed: \(error.localizedDescription)")
             }
         }
     }

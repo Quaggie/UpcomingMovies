@@ -54,8 +54,7 @@ struct Request {
                         DispatchQueue.main.async {
                             completion(Result.success(model))
                         }
-                    } catch let err {
-                        debugPrint(err)
+                    } catch {
                         DispatchQueue.main.async {
                             completion(Result.error(ApiError.defaultModel))
                         }
