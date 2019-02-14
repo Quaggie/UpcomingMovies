@@ -16,7 +16,7 @@ final class MovieDetailViewControllerScreen: UIView {
 
     private let imgView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
+        iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         return iv
     }()
@@ -73,8 +73,8 @@ final class MovieDetailViewControllerScreen: UIView {
 // MARK: - Public functions -
 extension MovieDetailViewControllerScreen {
     func setup(movie: Movie) {
-        if let posterUrlString = movie.posterUrlString, !posterUrlString.isEmpty {
-            imgView.download(urlString: posterUrlString)
+        if let backdropUrlString = movie.backdropUrlString, !backdropUrlString.isEmpty {
+            imgView.download(urlString: backdropUrlString)
         } else {
             imgView.image = UIImage(named: "movie_error")
         }
@@ -126,11 +126,7 @@ extension MovieDetailViewControllerScreen: CodeView {
     }
 
     func setupConstraints() {
-        scrollView.anchor(top: safeAreaLayoutGuide.topAnchor,
-                          leading: safeAreaLayoutGuide.leadingAnchor,
-                          bottom: safeAreaLayoutGuide.bottomAnchor,
-                          trailing: safeAreaLayoutGuide.trailingAnchor,
-                          insets: .zero)
+        scrollView.fillSuperview()
 
         containerView.anchor(top: scrollView.topAnchor,
                              leading: scrollView.leadingAnchor,
@@ -143,8 +139,7 @@ extension MovieDetailViewControllerScreen: CodeView {
                        leading: containerView.leadingAnchor,
                        trailing: containerView.trailingAnchor,
                        insets: .zero)
-
-        imgView.anchor(height: 300)
+        imgView.heightAnchor.constraint(equalTo: imgView.widthAnchor, multiplier: 0.5).isActive = true
 
         releaseYearLabel.anchor(top: imgView.bottomAnchor,
                                 leading: containerView.leadingAnchor,
