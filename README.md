@@ -16,7 +16,7 @@ A simple app that lists all upcoming movies from the [TheMovieDB](https://www.th
 - Swift 4.2+
 
 ## Installation
-`The Project should run without having to install the pods because it is on the repository, but if it doesn't build, please run the commands below.`
+`The Project should run without having to install the pods because it is on the repository, but if it doesn't build, please run the following commands.`
 
 Open the terminal on the project root
 
