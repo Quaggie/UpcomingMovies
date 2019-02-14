@@ -1,33 +1,24 @@
 //
-//  MovieTableViewCell.swift
+//  MovieDetailViewControllerScreen.swift
 //  UpcomingMovies
 //
-//  Created by Jonathan Bijos on 12/02/19.
+//  Created by jonathan.p.bijos on 14/02/19.
 //  Copyright © 2019 jonathanbijos. All rights reserved.
 //
 
 import UIKit
 
-final class MovieTableViewCell: UITableViewCell {
-
-    // MARK: - Static -
-    static let height: CGFloat = 170
+final class MovieDetailViewControllerScreen: UIView {
 
     // MARK: - Views -
+    private let scrollView = UIScrollView(frame: .zero)
+    private let containerView = UIView()
+
     private let imgView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
+        iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         return iv
-    }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        label.setContentCompressionResistancePriority(.required, for: .vertical)
-        label.setContentHuggingPriority(.required, for: .vertical)
-        return label
     }()
 
     private let releaseYearLabel: UILabel = {
@@ -38,7 +29,7 @@ final class MovieTableViewCell: UITableViewCell {
         label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
-    
+
     private let voteAverageLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
@@ -52,11 +43,12 @@ final class MovieTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 16, weight: .light)
+        label.numberOfLines = 0
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
-    
+
     private let overViewLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
@@ -68,35 +60,31 @@ final class MovieTableViewCell: UITableViewCell {
     }()
 
     // MARK: - Init -
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
         setupViews()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - Public functions -
+}
+
+// MARK: - Public functions -
+extension MovieDetailViewControllerScreen {
     func setup(movie: Movie) {
         if let posterUrlString = movie.posterUrlString, !posterUrlString.isEmpty {
             imgView.download(urlString: posterUrlString)
         } else {
             imgView.image = UIImage(named: "movie_error")
         }
-        
-        if let title = movie.title, !title.isEmpty {
-            titleLabel.text = title
-        } else {
-            titleLabel.text = "Title not found"
-        }
-        
+
         if let releaseYear = movie.releaseYear, !releaseYear.isEmpty {
             releaseYearLabel.text = releaseYear
         } else {
             releaseYearLabel.text = ""
         }
-        
+
         if let voteAverage = movie.voteAverage {
             voteAverageLabel.text = "\(voteAverage)/10"
         } else {
@@ -115,7 +103,7 @@ final class MovieTableViewCell: UITableViewCell {
         } else {
             genresLabel.text = "No genre found"
         }
-        
+
         if let overView = movie.overview, !overView.isEmpty {
             overViewLabel.text = overView
         } else {
@@ -124,51 +112,61 @@ final class MovieTableViewCell: UITableViewCell {
     }
 }
 
-// MARK: - Init -
-extension MovieTableViewCell: CodeView {
+// MARK: - CodeView -
+extension MovieDetailViewControllerScreen: CodeView {
     func buildViewHierarchy() {
-        contentView.addSubview(imgView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(releaseYearLabel)
-        contentView.addSubview(voteAverageLabel)
-        contentView.addSubview(genresLabel)
-        contentView.addSubview(overViewLabel)
+        addSubview(scrollView)
+        scrollView.addSubview(containerView)
+
+        containerView.addSubview(imgView)
+        containerView.addSubview(releaseYearLabel)
+        containerView.addSubview(voteAverageLabel)
+        containerView.addSubview(genresLabel)
+        containerView.addSubview(overViewLabel)
     }
-    
+
     func setupConstraints() {
-        imgView.anchor(top: contentView.topAnchor,
-                       leading: contentView.leadingAnchor,
-                       bottom: contentView.bottomAnchor,
+        scrollView.anchor(top: safeAreaLayoutGuide.topAnchor,
+                          leading: safeAreaLayoutGuide.leadingAnchor,
+                          bottom: safeAreaLayoutGuide.bottomAnchor,
+                          trailing: safeAreaLayoutGuide.trailingAnchor,
+                          insets: .zero)
+
+        containerView.anchor(top: scrollView.topAnchor,
+                             leading: scrollView.leadingAnchor,
+                             bottom: scrollView.bottomAnchor,
+                             trailing: scrollView.trailingAnchor,
+                             insets: .init(top: 0, left: 0, bottom: 0, right: 0))
+        containerView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+
+        imgView.anchor(top: containerView.topAnchor,
+                       leading: containerView.leadingAnchor,
+                       trailing: containerView.trailingAnchor,
                        insets: .zero)
-        imgView.anchor(width: 120)
 
-        titleLabel.anchor(top: contentView.topAnchor,
-                          leading: imgView.trailingAnchor,
-                          trailing: contentView.trailingAnchor,
-                          insets: .init(top: 8, left: 8, bottom: 0, right: 8))
+        imgView.anchor(height: 300)
 
-        releaseYearLabel.anchor(top: titleLabel.bottomAnchor,
-                                leading: imgView.trailingAnchor,
-                                insets: .init(top: 0, left: 8, bottom: 0, right: 0))
+        releaseYearLabel.anchor(top: imgView.bottomAnchor,
+                                leading: containerView.leadingAnchor,
+                                insets: .init(top: 8, left: 8, bottom: 0, right: 0))
 
-        voteAverageLabel.anchor(top: titleLabel.bottomAnchor,
-                                trailing: contentView.trailingAnchor,
-                                insets: .init(top: 0, left: 0, bottom: 0, right: 8))
+        voteAverageLabel.anchor(top: imgView.bottomAnchor,
+                                trailing: containerView.trailingAnchor,
+                                insets: .init(top: 8, left: 0, bottom: 0, right: 8))
 
         genresLabel.anchor(top: releaseYearLabel.bottomAnchor,
-                           leading: imgView.trailingAnchor,
-                           trailing: contentView.trailingAnchor,
-                           insets: .init(top: 0, left: 8, bottom: 0, right: 8))
+                           leading: containerView.leadingAnchor,
+                           trailing: containerView.trailingAnchor,
+                           insets: .init(top: 8, left: 8, bottom: 0, right: 8))
 
         overViewLabel.anchor(top: genresLabel.bottomAnchor,
-                             leading: imgView.trailingAnchor,
-                             bottom: contentView.bottomAnchor,
-                             trailing: contentView.trailingAnchor,
-                             insets: .init(top: 0, left: 8, bottom: 8, right: 8))
+                             leading: containerView.leadingAnchor,
+                             bottom: containerView.bottomAnchor,
+                             trailing: containerView.trailingAnchor,
+                             insets: .init(top: 8, left: 8, bottom: 8, right: 8))
     }
-    
+
     func setupAdditionalConfiguration() {
         backgroundColor = .white
-        contentView.backgroundColor = .white
     }
 }

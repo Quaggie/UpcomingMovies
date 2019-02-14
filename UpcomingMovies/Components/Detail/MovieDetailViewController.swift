@@ -12,6 +12,7 @@ class MovieDetailViewController: UIViewController {
     
     // MARK: - Properties -
     private let movie: Movie
+    private let screen = MovieDetailViewControllerScreen()
     
     // MARK: - Init -
     init(movie: Movie) {
@@ -22,12 +23,16 @@ class MovieDetailViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override func loadView() {
+        self.view = screen
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationItem()
-        view.backgroundColor = .white
+        screen.setup(movie: movie)
     }
 }
 
