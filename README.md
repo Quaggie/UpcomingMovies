@@ -10,8 +10,15 @@ A simple app that lists all upcoming movies from the [TheMovieDB](https://www.th
 - Support for all iPhones/iPads
 - Detail movie screen for full information
 
+## Required
+- iOS 12.0+ / macOS 10.12+
+- Xcode 10.1+
+- Swift 4.2+
+
 ## Installation
-Open the terminal on the project root and run the commands below
+`The Project should run without having to install the pods because it is on the repository, but if it doesn't build, please run the commands below.`
+
+Open the terminal on the project root
 
 - If Cocoapods is not installed (Please not ruby is required for the gem installation)
 ```bash
