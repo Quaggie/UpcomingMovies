@@ -36,7 +36,6 @@
 		E01D455922148A44000B06D9 /* UpcomingMoviesViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01D455822148A44000B06D9 /* UpcomingMoviesViewState.swift */; };
 		E01D455C22148C92000B06D9 /* UpcomingMoviesErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01D455B22148C92000B06D9 /* UpcomingMoviesErrorView.swift */; };
 		E01D455E22149040000B06D9 /* UpcomingMoviesEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01D455D22149040000B06D9 /* UpcomingMoviesEmptyView.swift */; };
-		E01D456122149A1A000B06D9 /* MovieTableViewFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01D456022149A1A000B06D9 /* MovieTableViewFooterView.swift */; };
 		E01D45632214C2A6000B06D9 /* UITableViewHeaderFooterView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01D45622214C2A6000B06D9 /* UITableViewHeaderFooterView+Extension.swift */; };
 		E0B4CEAF221096AE00498EA0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B4CEAE221096AE00498EA0 /* AppDelegate.swift */; };
 		E0B4CEB6221096B100498EA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0B4CEB5221096B100498EA0 /* Assets.xcassets */; };
@@ -81,7 +80,6 @@
 		E01D455822148A44000B06D9 /* UpcomingMoviesViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMoviesViewState.swift; sourceTree = "<group>"; };
 		E01D455B22148C92000B06D9 /* UpcomingMoviesErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMoviesErrorView.swift; sourceTree = "<group>"; };
 		E01D455D22149040000B06D9 /* UpcomingMoviesEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMoviesEmptyView.swift; sourceTree = "<group>"; };
-		E01D456022149A1A000B06D9 /* MovieTableViewFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTableViewFooterView.swift; sourceTree = "<group>"; };
 		E01D45622214C2A6000B06D9 /* UITableViewHeaderFooterView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewHeaderFooterView+Extension.swift"; sourceTree = "<group>"; };
 		E0B4CEAB221096AE00498EA0 /* UpcomingMovies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UpcomingMovies.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0B4CEAE221096AE00498EA0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -140,7 +138,6 @@
 			isa = PBXGroup;
 			children = (
 				E01D452722126826000B06D9 /* MovieTableViewCell.swift */,
-				E01D456022149A1A000B06D9 /* MovieTableViewFooterView.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -479,7 +476,6 @@
 				E0B4CECC2210AA2600498EA0 /* AppCoordinator.swift in Sources */,
 				E0B4CECF2210AB7600498EA0 /* CodeView.swift in Sources */,
 				E0B4CEC62210A99600498EA0 /* UpcomingMoviesCoordinator.swift in Sources */,
-				E01D456122149A1A000B06D9 /* MovieTableViewFooterView.swift in Sources */,
 				E01D455922148A44000B06D9 /* UpcomingMoviesViewState.swift in Sources */,
 				E01D45362214329A000B06D9 /* Request.swift in Sources */,
 				E01D4542221433F7000B06D9 /* UpcomingMoviesResponse.swift in Sources */,

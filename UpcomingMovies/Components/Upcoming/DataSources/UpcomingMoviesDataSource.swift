@@ -29,11 +29,9 @@ final class UpcomingMoviesDataSource: NSObject {
     
     // MARK: - Setup -
     private func register(tableView: UITableView) {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: UITableViewCell.identifier)
-        tableView.register(MovieTableViewFooterView.self,
-                           forHeaderFooterViewReuseIdentifier: MovieTableViewFooterView.identifier)
-        tableView.estimatedRowHeight = 100
-        tableView.rowHeight = 100
+        tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.identifier)
+        tableView.estimatedRowHeight = MovieTableViewCell.height
+        tableView.rowHeight = MovieTableViewCell.height
     }
 }
 
@@ -44,15 +42,10 @@ extension UpcomingMoviesDataSource: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: UITableViewCell.identifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: MovieTableViewCell.identifier, for: indexPath) as! MovieTableViewCell
         let movie = movies[indexPath.row]
-        cell.textLabel?.text = movie.title
-        if let posterUrlString = movie.posterUrlString {
-            cell.imageView?.download(urlString: posterUrlString)
-        } else {
-            cell.imageView?.image = UIImage(named: "movie_error")
-        }
-        
+        cell.setup(movie: movie)
+
         let isAlmostOnBottom = indexPath.row == (movies.count - 2)
         if isAlmostOnBottom {
             infiniteScrollDelegate.upcomingMoviesDataSourceInfiniteScrollDelegateOnExecute()

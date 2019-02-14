@@ -9,7 +9,11 @@
 import UIKit
 
 final class MovieTableViewCell: UITableViewCell {
-    
+
+    // MARK: - Static -
+    static let height: CGFloat = 170
+
+    // MARK: - Views -
     private let imgView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
@@ -20,28 +24,47 @@ final class MovieTableViewCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
-    
+
     private let releaseYearLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 16, weight: .light)
+        label.font = UIFont.italicSystemFont(ofSize: 16)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
     
     private let voteAverageLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
+        label.font = UIFont.italicSystemFont(ofSize: 16)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        return label
+    }()
+
+    private let genresLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 16, weight: .light)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
     
     private let overViewLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 16, weight: .light)
+        label.font = UIFont.systemFont(ofSize: 12, weight: .light)
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        label.setContentHuggingPriority(.defaultLow, for: .vertical)
         return label
     }()
 
@@ -80,6 +103,19 @@ final class MovieTableViewCell: UITableViewCell {
         } else {
             voteAverageLabel.text = ""
         }
+
+        if let genreIds = movie.genreIds {
+            let genres = genreIds.compactMap { (id) -> String? in
+                return Genre.getNameBy(id: id)
+            }
+            if genres.isEmpty {
+                genresLabel.text = "No genre found"
+            } else {
+                genresLabel.text = genres.joined(separator: ", ")
+            }
+        } else {
+            genresLabel.text = "No genre found"
+        }
         
         if let overView = movie.overview, !overView.isEmpty {
             overViewLabel.text = overView
@@ -92,14 +128,48 @@ final class MovieTableViewCell: UITableViewCell {
 // MARK: - Init -
 extension MovieTableViewCell: CodeView {
     func buildViewHierarchy() {
-        
+        contentView.addSubview(imgView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(releaseYearLabel)
+        contentView.addSubview(voteAverageLabel)
+        contentView.addSubview(genresLabel)
+        contentView.addSubview(overViewLabel)
     }
     
     func setupConstraints() {
-        
+        imgView.anchor(top: contentView.topAnchor,
+                       leading: contentView.leadingAnchor,
+                       bottom: contentView.bottomAnchor,
+                       insets: .zero)
+        imgView.anchor(width: 120)
+
+        titleLabel.anchor(top: contentView.topAnchor,
+                          leading: imgView.trailingAnchor,
+                          trailing: contentView.trailingAnchor,
+                          insets: .init(top: 8, left: 8, bottom: 0, right: 8))
+
+        releaseYearLabel.anchor(top: titleLabel.bottomAnchor,
+                                leading: imgView.trailingAnchor,
+                                insets: .init(top: 0, left: 8, bottom: 0, right: 0))
+
+        voteAverageLabel.anchor(top: titleLabel.bottomAnchor,
+                                trailing: contentView.trailingAnchor,
+                                insets: .init(top: 0, left: 0, bottom: 0, right: 8))
+
+        genresLabel.anchor(top: releaseYearLabel.bottomAnchor,
+                           leading: imgView.trailingAnchor,
+                           trailing: contentView.trailingAnchor,
+                           insets: .init(top: 0, left: 8, bottom: 0, right: 8))
+
+        overViewLabel.anchor(top: genresLabel.bottomAnchor,
+                             leading: imgView.trailingAnchor,
+                             bottom: contentView.bottomAnchor,
+                             trailing: contentView.trailingAnchor,
+                             insets: .init(top: 0, left: 8, bottom: 8, right: 8))
     }
     
     func setupAdditionalConfiguration() {
-        
+        backgroundColor = .white
+        contentView.backgroundColor = .white
     }
 }

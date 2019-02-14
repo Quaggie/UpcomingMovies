@@ -28,7 +28,7 @@ extension UIImageView {
             switch result {
             case .success(let value):
                 self.image = value.image
-            case .failure(let error):
+            case .failure:
                 self.image = UIImage(named: "movie_error")
             }
         }

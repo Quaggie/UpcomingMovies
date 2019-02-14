@@ -48,8 +48,9 @@ final class UpcomingMoviesViewControllerScreen: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func changeUI(for state: UpcomingMoviesViewState<UpcomingMoviesResponse>) {
+
+    // MARK: - Public functions -
+    func changeUI(for state: UpcomingMoviesViewState) {
         tableView.reloadData()
         switch state {
         case .loading:
@@ -126,5 +127,6 @@ extension UpcomingMoviesViewControllerScreen: CodeView {
     func setupAdditionalConfiguration() {
         backgroundColor = .white
         errorView.delegate = errorViewDelegate
+        changeUI(for: .loading)
     }
 }

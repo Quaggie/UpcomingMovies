@@ -18,7 +18,7 @@ final class UpcomingMoviesViewController: UIViewController {
     private lazy var dataSource = UpcomingMoviesDataSource(tableView: screen.tableView,
                                                            infiniteScrollDelegate: self,
                                                            movies: movies)
-    private var state: UpcomingMoviesViewState<UpcomingMoviesResponse> = .loading {
+    private var state: UpcomingMoviesViewState = .loading {
         didSet {
             screen.changeUI(for: state)
         }
@@ -46,10 +46,15 @@ final class UpcomingMoviesViewController: UIViewController {
         return total > 0
     }
     private var canInfiniteScroll: Bool {
-        guard !movies.isEmpty, isNotEmpty, movies.count < total, !isFiltering(), case .finished = state else {
+        guard !movies.isEmpty, isNotEmpty, movies.count < total, !isFiltering() else {
             return false
         }
-        return true
+        switch state {
+        case .finished, .errorLoadingMore:
+            return true
+        default:
+            return false
+        }
     }
     
     // MARK: - Init -
@@ -77,7 +82,6 @@ final class UpcomingMoviesViewController: UIViewController {
         setupTableView()
         setupSearchController()
         getGenres()
-        
     }
 }
 
@@ -174,7 +178,7 @@ private extension UpcomingMoviesViewController {
                         if let page = response.page {
                             self.page = page
                         }
-                        self.state = .finished(response)
+                        self.state = .finished
                     }
                 } else {
                     self.state = .empty("No movies found")
@@ -196,25 +200,6 @@ extension UpcomingMoviesViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let movie = getMovieFor(indexPath: indexPath)
         coordinator.goToMovieDetail(movie: movie)
-    }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: MovieTableViewFooterView.identifier) as! MovieTableViewFooterView
-        footer.state = .error
-        footer.delegate = self
-        return footer
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if total == 0 || isFiltering() {
-            return 0
-        }
-        
-        if state == .errorLoadingMore {
-            return MovieTableViewFooterView.height
-        }
-        
-        return 0
     }
 }
 
@@ -263,8 +248,11 @@ extension UpcomingMoviesViewController: UISearchControllerDelegate {
     }
     
     func willDismissSearchController(_ searchController: UISearchController) {
-        let response = UpcomingMoviesResponse(results: movies, page: page, totalResults: total, dates: nil, totalPages: nil)
-        state = .finished(response)
+        dataSource = UpcomingMoviesDataSource(tableView: screen.tableView,
+                                              infiniteScrollDelegate: self,
+                                              movies: movies)
+        screen.tableView.dataSource = dataSource
+        state = .finished
     }
 }
 
@@ -277,13 +265,6 @@ extension UpcomingMoviesViewController: UpcomingMoviesErrorViewDelegate {
             getMovies(page: page)
         }
         
-    }
-}
-
-// MARK: - MovieTableViewFooterViewDelegate -
-extension UpcomingMoviesViewController: MovieTableViewFooterViewDelegate {
-    func movieTableViewFooterViewDidTapRetryButton() {
-        tryAgain()
     }
 }
 

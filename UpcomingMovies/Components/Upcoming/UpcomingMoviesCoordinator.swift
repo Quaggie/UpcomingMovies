@@ -13,19 +13,22 @@ protocol UpcomingMoviesCoordinatorDelegate: AnyObject {
 }
 
 final class UpcomingMoviesCoordinator: Coordinator {
+    // MARK - Properties -
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
-    
+
+    // MARK: - Init -
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
-    
+
     func start() {
         let viewController = UpcomingMoviesViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: false)
     }
 }
 
+// MARK: - UpcomingMoviesCoordinatorDelegate -
 extension UpcomingMoviesCoordinator: UpcomingMoviesCoordinatorDelegate {
     func goToMovieDetail(movie: Movie) {
         let viewController = MovieDetailViewController(movie: movie)

@@ -8,17 +8,17 @@
 
 import Foundation
 
-enum UpcomingMoviesViewState<T: Decodable>: Equatable {
+enum UpcomingMoviesViewState: Equatable {
     case loading
     case loadingMore
-    case finished(T)
+    case finished
     case filtering
     case empty(String)
     case error(ApiError)
     case errorLoadingMore
 }
 
-func ==<T>(lhs: UpcomingMoviesViewState<T>, rhs: UpcomingMoviesViewState<T>) -> Bool {
+func ==(lhs: UpcomingMoviesViewState, rhs: UpcomingMoviesViewState) -> Bool {
     switch (lhs, rhs) {
     case (.loading, .loading):
         return true
